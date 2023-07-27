@@ -1,8 +1,8 @@
-import { styled } from 'styled-components';
-import { Tile, createBoard } from '../utils/board';
-import { useAppDispatch, useAppSelector } from '../store/config';
 import { useEffect, useState } from 'react';
+import { styled } from 'styled-components';
+import { useAppDispatch, useAppSelector } from '../store/config';
 import { flagTile, revealAllMines, revealTile, setBoard } from '../store/gameSlice';
+import { Tile, createBoard } from '../utils/board';
 import { getSurroundingTiles } from '../utils/tile';
 
 const WIDTH = 8;
@@ -18,26 +18,29 @@ function Board() {
 	const board = useAppSelector((state) => state.game.board);
 	const [winning, setWinning] = useState<boolean>(false);
 
+	// 초기 게임보드를 생성하고, store에 저장한다.
 	useEffect(() => {
 		const initialBoard = createBoard(WIDTH, HEIGHT, NUMBER_OF_MINES);
 		dispatch(setBoard(initialBoard));
 	}, []);
 
-	function onRightClick(e: React.MouseEvent<HTMLDivElement>, clickedTile: Tile) {
-		e.preventDefault();
-		if (clickedTile.status !== 'hidden' && clickedTile.status !== 'flagged') return;
-
-		dispatch(flagTile(clickedTile));
-
-		// checkWinCondition();
-	}
-
+	// board가 업데이트될 때마다 우승 조건을 체크한다.
 	useEffect(() => {
 		checkWinCondition();
 	}, [board]);
 
+	// 오른쪽 마우스 클릭 핸들러
+	function onRightClick(e: React.MouseEvent<HTMLDivElement>, clickedTile: Tile) {
+		e.preventDefault();
+		// 클릭한 타일이 이미 드러나있거나('revealed'), 깃발로 표시된 경우('flagged')에는 리턴한다.
+		if (clickedTile.status !== 'hidden' && clickedTile.status !== 'flagged') return;
+
+		dispatch(flagTile(clickedTile));
+	}
+
+	// 왼쪽 마우스 클릭 이벤트 핸들러
 	function onLeftClick(clickedTile: Tile) {
-		if (clickedTile.status !== 'hidden') return;
+		if (clickedTile.status !== 'hidden') return; // 클릭한 타일의 상태가 'hidden'일 때만 로직을 수행한다.
 
 		// 지뢰 찾은 경우 게임을 종료한다.
 		if (clickedTile.mine) {
@@ -45,6 +48,7 @@ function Board() {
 			return;
 		}
 
+		// 지뢰가 아닌 경우,
 		// 클릭한 타일을 스택에 넣는다.
 		const stack: Tile[] = [clickedTile];
 		const revealedTiles: Tile[] = []; // 이미 처리한 타일을 저장할 배열 (같은 타일을 중복으로 push하는 것 방지)
@@ -125,10 +129,12 @@ function Board() {
 		}
 	}
 
+	// 게임 오버시, 모든 지뢰를 드러낸다.
 	function gameOver(clickedTile: Tile) {
 		dispatch(revealAllMines(clickedTile));
 	}
 
+	// 깃발 표시된 총 타일의 수 = 깃발 표시된 지뢰의 수 = 게임에서 지정한 지뢰의 수가 일치할 때 게임에서 우승한다.
 	function checkWinCondition() {
 		let flaggedTilesCount = 0;
 		let flaggedMinesCount = 0;
@@ -156,6 +162,7 @@ function Board() {
 					row.map((tile) => (
 						<TileItem onClick={() => onLeftClick(tile)} onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile}>
 							{tile.status === 'revealed' && tile.value !== 0 && tile.value}
+							{tile.status === 'flagged' && tile.value !== '' && tile.value}
 							{tile.status === 'bomb' && tile.value}
 						</TileItem>
 					))
