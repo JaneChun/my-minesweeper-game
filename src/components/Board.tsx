@@ -6,14 +6,9 @@ import { flagTile, revealAllMines, setBoard } from '../store/gameSlice';
 import { Tile, createBoard } from '../utils/board';
 import { revealTiles } from '../utils/tile';
 
-interface TileProps {
-	tile: Tile;
-}
-
 function Board() {
 	const dispatch = useAppDispatch();
-	const board = useAppSelector((state) => state.game.board);
-	const setting = useAppSelector((state) => state.game.level);
+	const { board, setting } = useAppSelector((state) => state.game);
 	const { width: WIDTH, height: HEIGHT, mines: NUMBER_OF_MINES } = setting;
 	const { winning } = useCheckWinCondition();
 
@@ -74,6 +69,10 @@ export default Board;
 interface GridProps {
 	WIDTH: number;
 	HEIGHT: number;
+}
+
+interface TileProps {
+	tile: Tile;
 }
 
 const Grid = styled.div<GridProps>`

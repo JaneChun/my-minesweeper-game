@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Setting } from '../components/Nav';
 import { Tile } from '../utils/board';
 import { RootState } from './config';
-import { Setting } from '../components/Nav';
 
 const initialState: RootState = {
-	level: {
+	setting: {
 		width: 8,
 		height: 8,
 		mines: 10,
@@ -18,7 +18,7 @@ const gameSlice = createSlice({
 	reducers: {
 		// 난이도를 변경한다.
 		changeLevel: (state, action: PayloadAction<Setting>) => {
-			state.level = action.payload;
+			state.setting = action.payload;
 		},
 
 		// 게임 초기에 생성한 보드를 state에 저장한다.

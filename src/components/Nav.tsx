@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAppDispatch } from '../store/config';
 import { styled } from 'styled-components';
+import { useAppDispatch } from '../store/config';
 import { changeLevel } from '../store/gameSlice';
 
 export interface Setting {
