@@ -16,6 +16,7 @@ interface TileProps {
 function Board() {
 	const dispatch = useAppDispatch();
 	const board = useAppSelector((state) => state.game.board);
+	const [winning, setWinning] = useState<boolean>(false);
 
 	useEffect(() => {
 		const initialBoard = createBoard(WIDTH, HEIGHT, NUMBER_OF_MINES);
@@ -27,7 +28,13 @@ function Board() {
 		if (clickedTile.status !== 'hidden' && clickedTile.status !== 'flagged') return;
 
 		dispatch(flagTile(clickedTile));
+
+		// checkWinCondition();
 	}
+
+	useEffect(() => {
+		checkWinCondition();
+	}, [board]);
 
 	function onLeftClick(clickedTile: Tile) {
 		if (clickedTile.status !== 'hidden') return;
@@ -122,8 +129,28 @@ function Board() {
 		dispatch(revealAllMines(clickedTile));
 	}
 
+	function checkWinCondition() {
+		let flaggedTilesCount = 0;
+		let flaggedMinesCount = 0;
+
+		board.forEach((row) =>
+			row.forEach((tile) => {
+				if (tile.status === 'flagged') {
+					flaggedTilesCount++;
+				}
+				if (tile.mine && tile.status === 'flagged') {
+					flaggedMinesCount++;
+				}
+			})
+		);
+		if (flaggedTilesCount === NUMBER_OF_MINES && flaggedMinesCount === NUMBER_OF_MINES) {
+			setWinning(true);
+		}
+	}
+
 	return (
 		<>
+			{winning && <h1>성공!</h1>}
 			<Grid>
 				{board.map((row) =>
 					row.map((tile) => (
