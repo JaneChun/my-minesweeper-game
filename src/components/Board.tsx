@@ -48,15 +48,15 @@ function Board() {
 
 	return (
 		<>
-			{winning && <h1>성공!</h1>}
-			<Grid WIDTH={WIDTH} HEIGHT={HEIGHT}>
+			{winning && <SuccessMessage>SUCCESS!</SuccessMessage>}
+			<Grid width={WIDTH} height={HEIGHT}>
 				{board.map((row) =>
 					row.map((tile) => (
-						<TileItem onClick={() => onLeftClick(tile)} onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile}>
+						<TileButton onClick={() => onLeftClick(tile)} onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile}>
 							{tile.status === 'revealed' && tile.value !== 0 && tile.value}
 							{tile.status === 'flagged' && tile.value !== '' && tile.value}
 							{tile.status === 'bomb' && tile.value}
-						</TileItem>
+						</TileButton>
 					))
 				)}
 			</Grid>
@@ -67,8 +67,8 @@ function Board() {
 export default Board;
 
 interface GridProps {
-	WIDTH: number;
-	HEIGHT: number;
+	width: number;
+	height: number;
 }
 
 interface TileProps {
@@ -77,20 +77,41 @@ interface TileProps {
 
 const Grid = styled.div<GridProps>`
 	display: inline-grid;
-	grid-template-rows: repeat(${(props) => props.HEIGHT}, 20px);
-	grid-template-columns: repeat(${(props) => props.WIDTH}, 20px);
+	grid-template-rows: repeat(${(props) => props.height}, 20px);
+	grid-template-columns: repeat(${(props) => props.width}, 20px);
 	gap: 1px;
-	background-color: black;
-	border: 1px solid black;
+	background-color: #707070;
+
+	border-top: 3px solid #707070;
+	border-left: 3px solid #707070;
+
+	border-right: 3px solid white;
+	border-bottom: 3px solid white;
 `;
 
-const TileItem = styled.div<TileProps>`
+const TileButton = styled.div<TileProps>`
 	background-color: ${(props) => {
 		const { status } = props.tile;
-		if (status === 'hidden') return 'gray';
-		if (status === 'flagged') return 'yellow';
-		if (status === 'revealed') return 'white';
 		if (status === 'bomb') return 'red';
+		return '#bfbfbf';
 	}};
-	border: 1px solid ${(props) => (props.tile.mine ? 'red' : 'gray')};
+	color: ${(props) => (props.tile.value === 1 ? '#0000FF' : props.tile.value === 2 ? '#008000' : props.tile.value === 3 ? '#FF0000' : '#000')};
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-weight: bold;
+	cursor: pointer;
+	border-top: 3px solid white;
+	border-left: 3px solid white;
+	border-right: 3px solid #707070;
+	border-bottom: 3px solid #707070;
+	border: ${(props) => {
+		const { status } = props.tile;
+		if (status === 'revealed' || status === 'bomb') return 'none';
+	}};
+`;
+
+const SuccessMessage = styled.p`
+	font-weight: bold;
+	font-size: 20px;
 `;
