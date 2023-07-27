@@ -32,13 +32,26 @@ const gameSlice = createSlice({
 			const { board } = state;
 
 			board[x][y].status = 'revealed';
-			board[x][y].number = minesCount;
+			board[x][y].value = minesCount;
 		},
 
-		gameOver: () => {},
+		revealAllMines: (state, action: PayloadAction<Tile>) => {
+			const { x, y } = action.payload;
+			state.board.map((row) =>
+				row.map((tile) => {
+					if (tile.mine) {
+						tile.status = 'revealed';
+						tile.value = 'X';
+					}
+					if (tile.x === x && tile.y === y) {
+						tile.status = 'bomb';
+					}
+				})
+			);
+		},
 	},
 });
 
-export const { setBoard, flagTile, revealTile } = gameSlice.actions;
+export const { setBoard, flagTile, revealTile, revealAllMines } = gameSlice.actions;
 
 export default gameSlice.reducer;

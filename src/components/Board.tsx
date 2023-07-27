@@ -2,7 +2,7 @@ import { styled } from 'styled-components';
 import { Tile, createBoard } from '../utils/board';
 import { useAppDispatch, useAppSelector } from '../store/config';
 import { useEffect, useState } from 'react';
-import { flagTile, revealTile, setBoard } from '../store/gameSlice';
+import { flagTile, revealAllMines, revealTile, setBoard } from '../store/gameSlice';
 import { getSurroundingTiles } from '../utils/tile';
 
 const WIDTH = 8;
@@ -34,7 +34,7 @@ function Board() {
 
 		// 지뢰 찾은 경우 게임을 종료한다.
 		if (clickedTile.mine) {
-			alert('Game Over');
+			gameOver(clickedTile);
 			return;
 		}
 
@@ -118,13 +118,18 @@ function Board() {
 		}
 	}
 
+	function gameOver(clickedTile: Tile) {
+		dispatch(revealAllMines(clickedTile));
+	}
+
 	return (
 		<>
 			<Grid>
 				{board.map((row) =>
 					row.map((tile) => (
 						<TileItem onClick={() => onLeftClick(tile)} onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile}>
-							{tile.status === 'revealed' && tile.number !== 0 && tile.number}
+							{tile.status === 'revealed' && tile.value !== 0 && tile.value}
+							{tile.status === 'bomb' && tile.value}
 						</TileItem>
 					))
 				)}
@@ -150,7 +155,7 @@ const TileItem = styled.div<TileProps>`
 		if (status === 'hidden') return 'gray';
 		if (status === 'flagged') return 'yellow';
 		if (status === 'revealed') return 'white';
-		if (status === 'mine') return 'red';
+		if (status === 'bomb') return 'red';
 	}};
 	border: 1px solid ${(props) => (props.tile.mine ? 'red' : 'gray')};
 `;

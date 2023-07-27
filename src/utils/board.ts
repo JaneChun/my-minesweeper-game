@@ -9,14 +9,15 @@ export interface Tile {
 	x: number;
 	y: number;
 	mine: boolean;
-	number: number;
-	status: 'hidden' | 'revealed' | 'flagged' | 'mine';
+	value: number | string;
+	status: 'hidden' | 'revealed' | 'flagged' | 'bomb';
 }
 
 export function createBoard(width: number, height: number, numberOfMines: number) {
-	const board: Tile[][] = getInitialBoard(width, height);
-	const minePositions: minePostion[] = getMinePositions(width, height, numberOfMines);
+	const board: Tile[][] = getInitialBoard(width, height); // 빈 보드판
+	const minePositions: minePostion[] = getMinePositions(width, height, numberOfMines); // 지뢰 좌표 배열
 
+	// 보드판에 지뢰를 심어서 반환한다.
 	for (const { x, y } of minePositions) {
 		board[y][x].mine = true;
 	}
@@ -30,7 +31,7 @@ export function getInitialBoard(width: number, height: number) {
 	for (let x = 0; x < width; x++) {
 		const row: Tile[] = [];
 		for (let y = 0; y < height; y++) {
-			const tile: Tile = { x, y, mine: false, number: 0, status: 'hidden' };
+			const tile: Tile = { x, y, mine: false, value: 0, status: 'hidden' };
 			row.push(tile);
 		}
 		board.push(row);
