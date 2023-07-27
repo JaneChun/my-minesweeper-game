@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './config';
 import { Tile } from '../utils/board';
+import { getSurroundingTiles } from '../utils/tile';
 
 const initialState: RootState = {
 	board: [],
@@ -25,12 +26,19 @@ const gameSlice = createSlice({
 			}
 		},
 
-		revealTile: () => {},
+		revealTile: (state, action: PayloadAction<{ tile: Tile; minesCount: number }>) => {
+			const { tile, minesCount } = action.payload;
+			const { x, y } = tile;
+			const { board } = state;
+
+			board[x][y].status = 'revealed';
+			board[x][y].number = minesCount;
+		},
 
 		gameOver: () => {},
 	},
 });
 
-export const { setBoard, flagTile } = gameSlice.actions;
+export const { setBoard, flagTile, revealTile } = gameSlice.actions;
 
 export default gameSlice.reducer;
