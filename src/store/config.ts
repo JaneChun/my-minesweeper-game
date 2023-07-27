@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { Tile } from '../utils/board';
 import gameSlice from './gameSlice';
+import { Setting } from '../components/Nav';
 
 export const store = configureStore({
 	reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
 });
 
 export interface RootState {
+	level: Setting;
 	board: Tile[][];
 }
 

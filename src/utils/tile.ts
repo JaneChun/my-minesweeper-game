@@ -1,10 +1,9 @@
 import { Dispatch } from '@reduxjs/toolkit';
-import { HEIGHT, WIDTH } from '../components/Board';
 import { revealTile } from '../store/gameSlice';
 import { Tile } from './board';
 
 // 타일을 클릭했을 때 해당 타일과 주위 타일을 드러내는 함수 (1개 혹은 여러 개)
-export function revealTiles(clickedTile: Tile, board: Tile[][], dispatch: Dispatch) {
+export function revealTiles(clickedTile: Tile, board: Tile[][], dispatch: Dispatch, WIDTH: number, HEIGHT: number) {
 	const stack: Tile[] = [clickedTile]; // 클릭한 타일을 스택에 넣는다.
 	const revealedTiles: Tile[] = []; // 이미 처리한 타일을 저장할 배열 (같은 타일을 중복으로 push하는 것 방지)
 

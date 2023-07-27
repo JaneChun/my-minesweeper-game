@@ -6,10 +6,6 @@ import { flagTile, revealAllMines, setBoard } from '../store/gameSlice';
 import { Tile, createBoard } from '../utils/board';
 import { revealTiles } from '../utils/tile';
 
-export const WIDTH = 8;
-export const HEIGHT = 8;
-export const NUMBER_OF_MINES = 10;
-
 interface TileProps {
 	tile: Tile;
 }
@@ -17,13 +13,15 @@ interface TileProps {
 function Board() {
 	const dispatch = useAppDispatch();
 	const board = useAppSelector((state) => state.game.board);
+	const setting = useAppSelector((state) => state.game.level);
+	const { width: WIDTH, height: HEIGHT, mines: NUMBER_OF_MINES } = setting;
 	const { winning } = useCheckWinCondition();
 
 	// 초기 게임보드를 생성하고, store에 저장한다.
 	useEffect(() => {
 		const initialBoard = createBoard(WIDTH, HEIGHT, NUMBER_OF_MINES);
 		dispatch(setBoard(initialBoard));
-	}, []);
+	}, [setting]);
 
 	// 오른쪽 마우스 클릭 핸들러
 	function onRightClick(e: React.MouseEvent<HTMLDivElement>, clickedTile: Tile) {
@@ -44,7 +42,7 @@ function Board() {
 			return;
 		} else {
 			// 지뢰가 아니라면, 타일을 드러낸다.
-			revealTiles(clickedTile, board, dispatch);
+			revealTiles(clickedTile, board, dispatch, WIDTH, HEIGHT);
 		}
 	}
 
@@ -56,7 +54,7 @@ function Board() {
 	return (
 		<>
 			{winning && <h1>성공!</h1>}
-			<Grid>
+			<Grid WIDTH={WIDTH} HEIGHT={HEIGHT}>
 				{board.map((row) =>
 					row.map((tile) => (
 						<TileItem onClick={() => onLeftClick(tile)} onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile}>
@@ -73,10 +71,15 @@ function Board() {
 
 export default Board;
 
-const Grid = styled.div`
+interface GridProps {
+	WIDTH: number;
+	HEIGHT: number;
+}
+
+const Grid = styled.div<GridProps>`
 	display: inline-grid;
-	grid-template-rows: repeat(${WIDTH}, 20px);
-	grid-template-columns: repeat(${WIDTH}, 20px);
+	grid-template-rows: repeat(${(props) => props.HEIGHT}, 20px);
+	grid-template-columns: repeat(${(props) => props.WIDTH}, 20px);
 	gap: 1px;
 	background-color: black;
 	border: 1px solid black;

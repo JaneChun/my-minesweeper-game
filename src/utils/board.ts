@@ -18,7 +18,7 @@ export function createBoard(width: number, height: number, numberOfMines: number
 
 	// 보드판에 지뢰를 심어서 반환한다.
 	for (const { x, y } of minePositions) {
-		board[y][x].mine = true;
+		board[x][y].mine = true;
 	}
 
 	return board;

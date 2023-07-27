@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../store/config';
-import { NUMBER_OF_MINES } from '../components/Board';
 
 // board가 업데이트될 때마다 우승 조건을 체크한다.
 export const useCheckWinCondition = () => {
 	const board = useAppSelector((state) => state.game.board);
+	const { mines: NUMBER_OF_MINES } = useAppSelector((state) => state.game.level);
 	const [winning, setWinning] = useState<boolean>(false);
 
 	useEffect(() => {
