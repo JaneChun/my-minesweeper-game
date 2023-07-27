@@ -1,27 +1,37 @@
-import { useState } from 'react';
 import { styled } from 'styled-components';
-import { Tile, getBoard } from '../utils/board';
-import { flagTile } from '../utils/tile';
-
-interface TileProps {
-	tile: Tile;
-}
+import { Tile, createBoard } from '../utils/board';
+import { useAppDispatch, useAppSelector } from '../store/config';
+import { useEffect } from 'react';
+import { flagTile, setBoard } from '../store/gameSlice';
 
 const WIDTH = 8;
 const HEIGHT = 8;
 const NUMBER_OF_MINES = 10;
 
+interface TileProps {
+	tile: Tile;
+}
+
 function Board() {
-	const [board, setBoard] = useState<Tile[][]>(getBoard(WIDTH, HEIGHT, NUMBER_OF_MINES));
-	const mineLeftCount = board.flat().filter((tile) => tile.mine).length;
+	const dispatch = useAppDispatch();
+	const board = useAppSelector((state) => state.game.board);
+
+	useEffect(() => {
+		const initialBoard = createBoard(WIDTH, HEIGHT, NUMBER_OF_MINES);
+		dispatch(setBoard(initialBoard));
+	}, [dispatch]);
+
+	function onRightClick(e: React.MouseEvent<HTMLDivElement>, clickedTile: Tile) {
+		e.preventDefault();
+		if (clickedTile.status !== 'hidden' && clickedTile.status !== 'flagged') return;
+
+		dispatch(flagTile(clickedTile));
+	}
 
 	return (
 		<>
-			<div>남은 지뢰 개수 : {mineLeftCount}</div>
 			<Grid>
-				{board.map((row) =>
-					row.map((tile) => <TileItem onContextMenu={(e) => flagTile(e, tile, board, setBoard)} key={`${tile.x}-${tile.y}`} tile={tile} />)
-				)}
+				{board.map((row) => row.map((tile) => <TileItem onContextMenu={(e) => onRightClick(e, tile)} key={`${tile.x}-${tile.y}`} tile={tile} />))}
 			</Grid>
 		</>
 	);

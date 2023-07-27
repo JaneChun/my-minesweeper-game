@@ -1,3 +1,5 @@
+import { useAppDispatch } from '../store/config';
+
 interface minePostion {
 	x: number;
 	y: number;
@@ -7,11 +9,12 @@ export interface Tile {
 	x: number;
 	y: number;
 	mine: boolean;
-	status: 'hidden' | 'revealed' | 'flagged' | 'number';
+	number: number;
+	status: 'hidden' | 'revealed' | 'flagged' | 'mine';
 }
 
-export function getBoard(width: number, height: number, numberOfMines: number) {
-	const board: Tile[][] = createBoard(width, height);
+export function createBoard(width: number, height: number, numberOfMines: number) {
+	const board: Tile[][] = getInitialBoard(width, height);
 	const minePositions: minePostion[] = getMinePositions(width, height, numberOfMines);
 
 	for (const { x, y } of minePositions) {
@@ -21,13 +24,13 @@ export function getBoard(width: number, height: number, numberOfMines: number) {
 	return board;
 }
 
-export function createBoard(width: number, height: number) {
+export function getInitialBoard(width: number, height: number) {
 	const board: Tile[][] = [];
 
 	for (let x = 0; x < width; x++) {
 		const row: Tile[] = [];
 		for (let y = 0; y < height; y++) {
-			const tile: Tile = { x, y, status: 'hidden', mine: false };
+			const tile: Tile = { x, y, mine: false, number: 0, status: 'hidden' };
 			row.push(tile);
 		}
 		board.push(row);
